@@ -1,0 +1,14 @@
+{
+  "tomate": {
+    "luminosidade": { "min": 30000, "max": 50000 },
+    "umidade": { "min": 60, "max": 80 },
+    "temperatura": { "min": 20, "max": 30 },
+    "ventilacao": 1.5
+  },
+  "pepino": {
+    "luminosidade": { "min": 25000, "max": 40000 },
+    "umidade": { "min": 65, "max": 85 },
+    "temperatura": { "min": 18, "max": 28 },
+    "ventilacao": 1.2
+  }
+}

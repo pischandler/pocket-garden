@@ -1,0 +1,20 @@
+# Node.js
+node_modules
+dist
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Prisma
+/prisma/migrations/dev.db
+/prisma/migrations/*.sqlite
+/prisma/dev.db
+/generated/
+prisma/dev.db
+prisma/migrations/dev.db
+
+# Build
+/build
+/out

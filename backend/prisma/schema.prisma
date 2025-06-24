@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model usuarios {
+  id    Int              @id @default(autoincrement())
+  nome  String           @db.VarChar(100)
+  emails usuarios_emails[]
+  telefones usuarios_telefones[]
+  credenciais credenciais_usuarios[]
+  setups setup[]
+}
+
+model usuarios_emails {
+  id         Int       @id @default(autoincrement())
+  usuario_id Int
+  email      String    @db.VarChar(150)
+  active     Boolean
+
+  usuario usuarios @relation(fields: [usuario_id], references: [id])
+}
+
+model usuarios_telefones {
+  id         Int       @id @default(autoincrement())
+  usuario_id Int
+  telefone   String    @db.VarChar(20)
+  active     Boolean
+
+  usuario usuarios @relation(fields: [usuario_id], references: [id])
+}
+
+model credenciais_usuarios {
+  id         Int       @id @default(autoincrement())
+  usuario_id Int
+  usuario    String    @db.VarChar(50)
+  senha      String    @db.VarChar(255)
+
+  usuario_rel usuarios @relation(fields: [usuario_id], references: [id])
+}
+
+model planta {
+  id                      Int                      @id @default(autoincrement())
+  nome                    String                   @db.VarChar(100)
+  descricao               String
+  parametros_luminosidade parametro_luminosidade[]
+  parametros_umidade      parametro_umidade[]
+  parametros_temperatura  parametro_temperatura[]
+  parametros_ventilacao   parametro_ventilacao[]
+  setups                  setup[]
+}
+
+model parametro_luminosidade {
+  id             Int    @id @default(autoincrement())
+  planta_id      Int
+  iluminacao_min Float
+  iluminacao_max Float
+
+  planta planta @relation(fields: [planta_id], references: [id])
+}
+
+model parametro_umidade {
+  id          Int    @id @default(autoincrement())
+  planta_id   Int
+  umidade_min Float
+  umidade_max Float
+
+  planta planta @relation(fields: [planta_id], references: [id])
+}
+
+model parametro_temperatura {
+  id              Int    @id @default(autoincrement())
+  planta_id       Int
+  temperatura_min Float
+  temperatura_max Float
+
+  planta planta @relation(fields: [planta_id], references: [id])
+}
+
+model parametro_ventilacao {
+  id         Int    @id @default(autoincrement())
+  planta_id  Int
+  ventilacao Float
+
+  planta planta @relation(fields: [planta_id], references: [id])
+}
+
+model setup {
+  id          Int              @id @default(autoincrement())
+  nome        String           @db.VarChar(100)
+  codigo      String           @unique @db.VarChar(50)
+  usuario_id  Int
+  planta_id   Int
+  data_inicio DateTime
+
+  usuario usuarios @relation(fields: [usuario_id], references: [id])
+  planta  planta   @relation(fields: [planta_id], references: [id])
+
+  status  status_setup[]
+  leituras sensor_leitura[]
+  log_atuacoes log_atuacao[]
+  comandos comandos_pendentes[]
+  conexoes log_esp_conexao[]
+}
+
+model setup_status {
+  id          Int           @id @default(autoincrement())
+  descricao   String        @db.VarChar(50)
+  status_list status_setup[]
+}
+
+model status_setup {
+  id             Int          @id @default(autoincrement())
+  setup_id       Int
+  setup_status_id Int
+
+  setup        setup        @relation(fields: [setup_id], references: [id])
+  setup_status setup_status @relation(fields: [setup_status_id], references: [id])
+}
+
+model atuador_tipo {
+  id      Int       @id @default(autoincrement())
+  nome    String    @db.VarChar(50)
+  atuadores atuadores[]
+}
+
+model atuadores {
+  id      Int          @id @default(autoincrement())
+  nome    String       @db.VarChar(100)
+  tipo_id Int
+
+  tipo atuador_tipo @relation(fields: [tipo_id], references: [id])
+
+  log_atuacoes log_atuacao[]
+  comandos comandos_pendentes[]
+}
+
+model motivo_atuacao {
+  id           Int           @id @default(autoincrement())
+  descricao    String        @db.VarChar(100)
+  log_atuacoes log_atuacao[]
+}
+
+model log_atuacao {
+  id         Int             @id @default(autoincrement())
+  setup_id   Int
+  atuador_id Int
+  acao       String          @db.VarChar(50)
+  timestamp  DateTime
+  motivo     String
+  motivo_id  Int
+
+  setup  setup          @relation(fields: [setup_id], references: [id])
+  atuador atuadores      @relation(fields: [atuador_id], references: [id])
+  motivo_rel motivo_atuacao @relation(fields: [motivo_id], references: [id])
+}
+
+model sensor_tipo {
+  id      Int              @id @default(autoincrement())
+  nome    String           @db.VarChar(50)
+  leituras sensor_leitura[]
+}
+
+model sensor_leitura {
+  id             Int         @id @default(autoincrement())
+  setup_id       Int
+  sensor_tipo_id Int
+  valor          Float
+  timestamp      DateTime
+
+  setup setup        @relation(fields: [setup_id], references: [id])
+  tipo  sensor_tipo  @relation(fields: [sensor_tipo_id], references: [id])
+}
+
+model comandos_pendentes {
+  id                Int       @id @default(autoincrement())
+  setup_id          Int
+  atuador_id        Int
+  comando           String    @db.VarChar(50)
+  enviado           Boolean
+  resultado         String?   @db.VarChar(100)
+  resposta_timestamp DateTime?
+  timestamp         DateTime
+
+  setup   setup     @relation(fields: [setup_id], references: [id])
+  atuador atuadores @relation(fields: [atuador_id], references: [id])
+}
+
+model log_esp_conexao {
+  id        Int      @id @default(autoincrement())
+  setup_id  Int
+  timestamp DateTime
+  status    String   @db.VarChar(20)
+
+  setup setup @relation(fields: [setup_id], references: [id])
+}

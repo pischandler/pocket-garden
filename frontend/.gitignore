@@ -1,0 +1,39 @@
+# Node
+node_modules/
+dist/
+.env
+.env.local
+
+# Prisma
+/generated/
+prisma/migrations/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vite / Frontend build
+frontend/dist/
+frontend/node_modules/
+
+# Backend build (se usar build no futuro)
+backend/dist/
+backend/node_modules/
+
+# IDEs / Configs de editor
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Cache
+.cache/
+.next/
